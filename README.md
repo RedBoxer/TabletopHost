@@ -1,2 +1,4 @@
-# alisa-example
-простейший навык для Яндекс диалогов. 
+# TableTop Host
+
+
+Основано на https://github.com/FishErr/alisa-example 
