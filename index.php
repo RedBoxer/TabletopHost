@@ -32,7 +32,10 @@ header('Content-Type: application/json');
 /**
  * Впишите сюда своё активационное имя
  */
-$mySkillName = 'Погода в Крыму';
+$mySkillName = 'Хост настолок';
+
+$EvilCards = ['Карта 1', 'Карта 2', 'Карта 3', 'Карта 4'];
+$CurrentCard = file_get_contents('card.txt', FILE_USE_INCLUDE_PATH);
 
 
 
@@ -106,6 +109,13 @@ try{
                     ]
                 ]);
             }elseif($text == 'гитлер') {
+
+                $SoundArray = ['<speaker audio="alice-sounds-human-laugh-3.opus">', '<speaker audio="alice-sounds-human-laugh-4.opus">', '<speaker audio="alice-sounds-animals-rooster-1.opus">'];
+                $ttsString = 'Начинаем игру Секретный Гитлер.Все закрывают глаза sil<[1500]> Открывают глаза фашисты. 
+                                   Фашисты находят друг друга. 
+                                   Гитлер подаёт знак. ' . $SoundArray[random_int(0, count($SoundArray) - 1)] . 'Гитлер перестаёт подавать знак. 
+                                   Фашисты закрывают глаза.
+                                   Открывают глаза все';
                 $response = json_encode([
                     'version' => '1.0',
                     'session' => [
@@ -123,15 +133,7 @@ try{
                                    Гитлер перестаёт подавать знак. 
                                    Фашисты закрывают глаза.
                                    Открывают глаза все',
-                        'tts' => 'Начинаем игру Секретный Гитлер. 
-                                   Посмотрите на свои карты.------ 
-                                   Все закрывают глаза. 
-                                   Открывают глаза фашисты. 
-                                   Фашисты находят друг друга. 
-                                   Гитлер подаёт знак. 
-                                   Гитлер перестаёт подавать знак. 
-                                   Фашисты закрывают глаза.
-                                   Открывают глаза все',
+                        'tts' => $ttsString,
                         'buttons' => $buttons
                     ]
                 ]);
@@ -153,6 +155,80 @@ $answerArray = [
                         'buttons' => $buttons
                     ]
                 ]);
+            } elseif($text == 'выбери карту') {
+                
+                if ($CurrentCard == PHP_EOL)
+                {
+                    $CurrentCard = $EvilCards[random_int(0, count($EvilCards) - 1)];
+                    file_put_contents('card.txt', $CurrentCard . PHP_EOL);
+                    $ttsAnswer = 'Выбираю карту. Текущий вопрос это sil<[500]>' . $CurrentCard;
+                }
+                else
+                {
+                    $ttsAnswer = 'Карта уже выбрана. Это sil<[500]>' . $CurrentCard;
+                }
+                
+                $response = json_encode([
+                    'version' => '1.0',
+                    'session' => [
+                        'session_id' => $data['session']['session_id'],
+                        'message_id' => $data['session']['message_id'],
+                        'user_id' => $data['session']['user_id']
+                    ],
+                    'response' => [
+                        'text' => ''. $CurrentCard,
+                        'tts' =>  $ttsAnswer,
+                        'buttons' => $buttons
+                    ]
+                ]);
+
+            } elseif($text == 'повтори карту') {
+                
+                if ($CurrentCard == PHP_EOL)
+                {
+                    $ttsAnswer = 'Карта не выбранна. Для выбора скажите "Выбери карту"';
+                }
+                else
+                {
+                    $ttsAnswer = 'Текущий вопрос это sil<[500]>' . $CurrentCard;;
+                }
+                
+                $response = json_encode([
+                    'version' => '1.0',
+                    'session' => [
+                        'session_id' => $data['session']['session_id'],
+                        'message_id' => $data['session']['message_id'],
+                        'user_id' => $data['session']['user_id']
+                    ],
+                    'response' => [
+                        'text' => ''. $CurrentCard,
+                        'tts' =>  $ttsAnswer,
+                        'buttons' => $buttons
+                    ]
+                ]);
+        
+            } elseif($text == 'сбрось карту') {
+                
+                $CurrentCard = file_put_contents('card.txt', PHP_EOL);
+                
+                $ttsAnswer = 'Карта сброшена';
+                
+                $response = json_encode([
+                    'version' => '1.0',
+                    'session' => [
+                        'session_id' => $data['session']['session_id'],
+                        'message_id' => $data['session']['message_id'],
+                        'user_id' => $data['session']['user_id']
+                    ],
+                    'response' => [
+                        'text' => ''. $CurrentCard,
+                        'tts' =>  $ttsAnswer,
+                        'buttons' => $buttons
+                    ]
+                ]);
+        
+            
+        
         
             }elseif($text == 'хватит' || $text == 'выход') { // Обязательно добавляем условия выхода
                 $answerArray = [
