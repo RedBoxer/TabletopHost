@@ -1,19 +1,15 @@
 <?php
 include_once 'xml2array.php';
 
-$cities= [
-    'Ялта' => 11470,
-    'Симферополь'=> 146,
-    'Севастополь' => 959,
-    'Евпатория' => 11463,
-    'Керчь' => 11464,
+$MyButtons= [
+    "Гитлер", "Выбери карту", "Повтори карту", "Сбрось карту",
 ];
 
 $response = '';
 $buttons = [];
-foreach ($cities as $city=>$id) {
+foreach ($MyButtons as $button) {
     $buttons[] = [
-        'title'=>$city,
+        'title'=>$button,
         'hide'=>true
     ];
         //    "buttons": [
@@ -101,10 +97,8 @@ try{
                         'user_id' => $data['session']['user_id']
                     ],
                     'response' => [
-                        'text' => 'Навык позволяет получать погоду в городах Крыма,
-                         для проверки погоды следует назвать город или выбрать его с помощью кнопки. Для выхода скажите "Алиса хватит"',
-                        'tts' => 'Навык позволяет получать погоду в городах Крыма,
-                         для проверки погоды следует назвать город или выбрать его с помощью кнопки. Для выхода скажите "Алиса хватит"',
+                        'text' => 'Текущие доступные действия "гитлер", "выбрать, повторить или сбросить карту", для выхода "Алиса хватит"',
+                        'tts' => 'Текущие доступные действия "гитлер", "выбрать, повторить или сбросить карту", для выхода "Алиса хватит"',
                         'buttons' => $buttons
                     ]
                 ]);
@@ -134,24 +128,6 @@ try{
                                    Фашисты закрывают глаза.
                                    Открывают глаза все',
                         'tts' => $ttsString,
-                        'buttons' => $buttons
-                    ]
-                ]);
-            } elseif($text == 'тест') {
-$answerArray = [
-    'Пока'=> 'Пок+а', 'До свидания'=>'До свид+ания', 'Приятного дня'=> 'При+ятного дня',
-];
-                $currentAnswer =  $answerArray[random_int(0, 2)];
-                $response = json_encode([
-                    'version' => '1.0',
-                    'session' => [
-                        'session_id' => $data['session']['session_id'],
-                        'message_id' => $data['session']['message_id'],
-                        'user_id' => $data['session']['user_id']
-                    ],
-                    'response' => [
-                        'text' => '' . $currentAnswer,
-                        'tts' =>  '' . key($currentAnswer),
                         'buttons' => $buttons
                     ]
                 ]);
@@ -190,7 +166,7 @@ $answerArray = [
                 }
                 else
                 {
-                    $ttsAnswer = 'Текущий вопрос это sil<[500]>' . $CurrentCard;;
+                    $ttsAnswer = 'Текущий вопрос это sil<[500]>' . $CurrentCard;
                 }
                 
                 $response = json_encode([
@@ -252,33 +228,8 @@ $answerArray = [
                     ]
                 ]);
             } else {
-                /**
-                 * Здесь опишите логику обработки запроса пользователя.
-                 * Например, давайте возвращать количество символов в запросе пользователя.
-                 */
-
-                if(array_key_exists($text, $cities)) {
-                    $id = $cities[$text];
-                    $array = xml2array('https://export.yandex.ru/bar/reginfo.xml?region=' . $id);
-                    $weather = $array['info']['weather']['day']['day_part'][0];
-                    $answer_text = 'Погода в г.' . $text . ': ' .
-                        $weather['temperature']
-                        .  'C , Давление '
-                        . $weather['pressure']
-                        . 'мм.р.ст, Влажность '
-                        . $weather['dampness']
-                        . '\n';                
-                }else{
-                    $answer_text = 'Город ' . $text . ' не найден, назовите другой или выберите из списка. для выхода скажите хватит';
-                }
-
-                // Притянутый за уши пример работы с сессией
-                if(empty($_SESSION['count'])) {
-                    $_SESSION['count']=1;
-                }else{
-                    $_SESSION['count']++;
-                }
-                $answer_text .= ' Вы сделали ' . $_SESSION['count'] . ' запросов';
+            
+                $answer_text = 'Я не умею ' . $text . '. Попробуйте спросить ещё раз';
 
                 $response = json_encode([
                     'version' => '1.0',
